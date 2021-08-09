@@ -1,3 +1,3 @@
 package com.artivac
 
-data class Title(val title: String, val rows:List<Rows>)
+data class Title(val title: String, val rows:ArrayList<Rows>)

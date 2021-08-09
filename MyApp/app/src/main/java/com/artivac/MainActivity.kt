@@ -8,20 +8,25 @@ import android.widget.ProgressBar
 import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 class MainActivity : AppCompatActivity() {
     lateinit var adapter: CountryAdapter
-    private val progressBar by lazy {
-        findViewById<ProgressBar>(R.id.progressBar)
+    private val refreshLayout by lazy {
+        findViewById<SwipeRefreshLayout>(R.id.refreshLayout)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setToolBar()
+        refreshLayout.setOnRefreshListener {
+            adapter.clear()
+            getCountry()
+        }
         getCountry()
     }
 
@@ -33,10 +38,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun getCountry() {
         val country = CountryService.countryInstance.getCountryData(1)
-        progressBar.visibility = View.VISIBLE
+        refreshLayout.isRefreshing = true
         country.enqueue(object : Callback<Title> {
             override fun onResponse(call: Call<Title>?, response: Response<Title>) {
-                progressBar.visibility = View.GONE
+                refreshLayout.isRefreshing = false
                 val title = response.body()
                 supportActionBar?.title = title.title
                 if (title != null) {
@@ -50,7 +55,7 @@ class MainActivity : AppCompatActivity() {
 
             override fun onFailure(call: Call<Title>?, t: Throwable?) {
                 Log.d("DIP", "Error in fetching data: ", t)
-                progressBar.visibility = View.GONE
+                refreshLayout.isRefreshing = false
             }
         })
 

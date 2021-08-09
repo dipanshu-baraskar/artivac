@@ -9,7 +9,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 
-class CountryAdapter(private val context: Context, private val rows: List<Rows>) :
+class CountryAdapter(private val context: Context, private val rows: ArrayList<Rows>) :
     RecyclerView.Adapter<CountryAdapter.CountryViewHolder>() {
 
     class CountryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -27,12 +27,17 @@ class CountryAdapter(private val context: Context, private val rows: List<Rows>)
         val rows=  rows[position]
         holder.title.text = rows.title
         holder.description.text = rows.description
-        Glide.with(holder.itemView.context).load(rows.imageHref).into(holder.image)
-
+        Glide.with(holder.itemView.context).load(rows.imageHref)
+            .error(R.drawable.ic_baseline_error_24).into(holder.image)
     }
 
     override fun getItemCount(): Int {
         return rows.size
+    }
+
+    fun clear() {
+        rows.clear()
+        notifyDataSetChanged()
     }
 }
 
